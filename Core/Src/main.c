@@ -57,7 +57,7 @@ int64_t Difftime[CAPTURENUM - 1] = {0};
 
 //Mean time
 float MeanTime = 0;
-
+float RPM = 0;
 
 uint64_t _micros = 0;	//microsecond measurement
 /* USER CODE END PV */
@@ -127,7 +127,7 @@ int main(void)
   {
 	  //read time of encoder
 	  encoderSpeedReaderCycle();
-	  if(micros() - timestamp > 1000000)
+	  if(micros() - timestamp > 200000)
 	  	  {
 	  		  timestamp = micros();
 	  		  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
@@ -378,14 +378,15 @@ void encoderSpeedReaderCycle()
 	//calculate diff from all buffer
 	for(register int i = 0; i < CAPTURENUM - 1; i++)
 	{
-		DiffTime[i] = capturedata[(CapPos + 1 + i) % CAPTURENUM] - capturedata[(CapPos + i) % CAPTURENUM];
+		Difftime[i] = capturedata[(CapPos + 1 + i) % CAPTURENUM] - capturedata[(CapPos + i) % CAPTURENUM];
 		//time never go back, but timer can over flow, conpensate that
-		if(DiffTime[i] < 0)
+		if(Difftime[i] < 0)
 		{
-			DiffTime[i] += 65535;
+			Difftime[i] += 65535;
 		}
 		//Sum all 15 Diff
 		sum += Difftime[i];
+		RPM = (60*1000000)/(MeanTime*12*64);
 	}
 
 	//mean all 15  diff
