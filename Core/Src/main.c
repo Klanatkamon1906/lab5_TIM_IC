@@ -127,7 +127,7 @@ int main(void)
   {
 	  //read time of encoder
 	  encoderSpeedReaderCycle();
-	  if(micros() - timestamp > 200000)
+	  if(micros() - timestamp > 100000)
 	  	  {
 	  		  timestamp = micros();
 	  		  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
@@ -382,7 +382,7 @@ void encoderSpeedReaderCycle()
 		//time never go back, but timer can over flow, conpensate that
 		if(Difftime[i] < 0)
 		{
-			Difftime[i] += 65535;
+			Difftime[i] += 4294967295;
 		}
 		//Sum all 15 Diff
 		sum += Difftime[i];
@@ -401,9 +401,9 @@ uint64_t micros()
 //interrupt
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	if(htim == &htim2)
+	if(htim == &htim5)
 	{
-		_micros += 65535;
+		_micros += 4294967295;
 	}
 }
 /* USER CODE END 4 */
